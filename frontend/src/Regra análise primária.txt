@@ -1,0 +1,13 @@
+__________________________________________
+Gráfico Síntese
+
+Adicione um label pós coletar as informações. Nesse label deve aparecer as letras DISC da seguinte forma seguindo os resultados apenas do gráfico síntese, com a seguinte regra:
+- D: Se o valor for abaixo ou igual a 0, retire a letra "D" do label. Se o valor for a partir de 14, escreva "Alto D".
+- I: Se o valor for Abaixo ou igual a -1, retire a letra "I". Se o valor for partir de 7, escreva "Alto I".
+- S: Se o valor for abaixo ou igual a -1, retire a letra "S". Se o valor for partir de 10, escreva "Alto S"
+- C: Se o valor for abaixo ou igual a -3, retire a letra "C". Se o valor for partir de 5, escreva "Alto C"
+
+
+
+
+

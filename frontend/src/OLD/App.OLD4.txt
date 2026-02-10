@@ -1,0 +1,354 @@
+import React, { useState } from "react";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ChartDataLabels);
+
+const FormularioDISC = () => {
+  const [respostas, setRespostas] = useState({});
+  const [erro, setErro] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [dadosGraficoExterno, setDadosGraficoExterno] = useState(null);
+  const [dadosGraficoInterno, setDadosGraficoInterno] = useState(null);
+  const [dadosGraficoSintese, setDadosGraficoSintese] = useState(null);
+  const [valoresTabela, setValoresTabela] = useState(null);
+
+  const categorias = ["D", "I", "S", "C"];
+
+  // Opções para os gráficos
+  const optionsWithDataLabels = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: "Resultados DISC" },
+      datalabels: {
+        align: "top",
+        anchor: "end",
+        font: { size: 14, weight: "bold" },
+        color: "black"
+      },
+    },
+  };
+
+  // Lista dos quadros de perguntas
+  const quadros = [
+    [
+      { id: 1, texto: "Complacente, Agradável.", categoria: "S" },
+      { id: 2, texto: "Acredita nos outros.", categoria: "I" },
+      { id: 3, texto: "Aventureiro, arrisca fácil.", categoria: "D" },
+      { id: 4, texto: "Tolerante, respeitoso.", categoria: "C" },
+    ],
+    [
+      { id: 5, texto: "Resultados é o que mais importa.", categoria: "D" },
+      { id: 6, texto: "Precisão é o que mais importa.", categoria: "C" },
+      { id: 7, texto: "Divertir-se em tudo o que faz, aproveitar.", categoria: "I" },
+      { id: 8, texto: "Fazer juntos é o melhor.", categoria: "S" },
+    ],
+    [
+      { id: 9, texto: "Educação e cultura", categoria: "C" },
+      { id: 10, texto: "Recompensa e realização", categoria: "D" },
+      { id: 11, texto: "Segurança e Cautela", categoria: "S" },
+      { id: 12, texto: "Festas, sociabilizar e galera", categoria: "I" },
+    ],
+    [
+      { id: 13, texto: "Manso, Reservado", categoria: "C" },
+      { id: 14, texto: "Visionário, otimista", categoria: "D" },
+      { id: 15, texto: "Centro das atenções, Sociável", categoria: "I" },
+      { id: 16, texto: "Pacificador, busca trazer paz e harmonia", categoria: "S" },
+    ],
+    [
+      { id: 17, texto: "Tem bom controle de gastos", categoria: "C" },
+      { id: 18, texto: "Compra logo, por impulso", categoria: "D" },
+      { id: 19, texto: "Espera pra comprar depois, sem pressão!", categoria: "S" },
+      { id: 20, texto: "Gasto naquilo que eu quero", categoria: "I" },
+    ],
+    [
+      { id: 21, texto: "Direto, Toma a frente", categoria: "D" },
+      { id: 22, texto: "Extrovertido, entusiasmado", categoria: "I" },
+      { id: 23, texto: "Consistente, Previsível", categoria: "S" },
+      { id: 24, texto: "Cuidadoso, Cauteloso", categoria: "C" },
+    ],
+    [
+      { id: 25, texto: "Encoraja outros", categoria: "I" },
+      { id: 26, texto: "Luta pela perfeição", categoria: "C" },
+      { id: 27, texto: "Faz parte do time", categoria: "S" },
+      { id: 28, texto: "Quer estabelecer alvos", categoria: "D" },
+    ],
+    [
+      { id: 29, texto: "Amigo, Boa companhia.", categoria: "S" },
+      { id: 30, texto: "Não gosta de rotina, Único!", categoria: "I" },
+      { id: 31, texto: "Gosta de mudar as coisas", categoria: "D" },
+      { id: 32, texto: "Gosta das coisas exatas.", categoria: "C" },
+    ],
+    [
+      { id: 33, texto: "Não se entrega fácil.", categoria: "D" },
+      { id: 34, texto: "Segue o líder, submisso", categoria: "S" },
+      { id: 35, texto: "Empolgado, anima os outros", categoria: "I" },
+      { id: 36, texto: "Quer as coisas bem arrumadas.", categoria: "C" },
+    ],
+    [
+      { id: 37, texto: "Se frustra  facilmente", categoria: "C" },
+      { id: 38, texto: "Guarda os sentimentos ", categoria: "S" },
+      { id: 39, texto: "Conta bem o seu lado da história", categoria: "I" },
+      { id: 40, texto: "Se opõe se não concordar", categoria: "D" },
+    ],
+    [
+      { id: 41, texto: "Não gosta de confrontos.", categoria: "S" },
+      { id: 42, texto: "Muito detalhista ", categoria: "C" },
+      { id: 43, texto: "Sempre muda no ultimo minuto", categoria: "I" },
+      { id: 44, texto: "Exigente, Abrupto.", categoria: "D" },
+    ],
+    [
+      { id: 45, texto: "Eu os lidero.", categoria: "D" },
+      { id: 46, texto: "Dou continuidade", categoria: "S" },
+      { id: 47, texto: "Vou convencê-los", categoria: "I" },
+      { id: 48, texto: "Vou atrás dos fatos.", categoria: "C" },
+    ],
+    [
+      { id: 49, texto: "Falador, Vigoroso", categoria: "I" },
+      { id: 50, texto: "Determinado, rápido", categoria: "D" },
+      { id: 51, texto: "Tenta manter o equilíbrio", categoria: "S" },
+      { id: 52, texto: "Tenta seguir as regras", categoria: "C" },
+    ],
+    [
+      { id: 53, texto: "Quer progredir", categoria: "D" },
+      { id: 54, texto: "Satisfeito com as coisas", categoria: "S" },
+      { id: 55, texto: "Mostra sentimentos abertamente", categoria: "I" },
+      { id: 56, texto: "Modesto, humilde.", categoria: "C" },
+    ],
+    [
+      { id: 57, texto: "Primeiro pensa nos outros", categoria: "S" },
+      { id: 58, texto: "Competitivo, gosta de mudanças", categoria: "D" },
+      { id: 59, texto: "Positivo, Otimista", categoria: "I" },
+      { id: 60, texto: "Pensador lógico, Sistemático.", categoria: "C" },
+    ],
+    [
+      { id: 61, texto: "Controla seu tempo com eficiência", categoria: "C" },
+      { id: 62, texto: "Sempre está correndo, se sente pressionado", categoria: "D" },
+      { id: 63, texto: "Eventos sociais são importantes", categoria: "I" },
+      { id: 64, texto: "Gosta de acabar o que começou", categoria: "S" },
+    ],
+    [
+      { id: 65, texto: "Reservado, cabeça fria", categoria: "C" },
+      { id: 66, texto: "Alegre, Despreocupado", categoria: "I" },
+      { id: 67, texto: "Gentil, Bondoso", categoria: "S" },
+      { id: 68, texto: "Corajoso, Ousado.", categoria: "D" },
+    ],
+    [
+      { id: 69, texto: "Agrada aos outros, sempre concorda com tudo", categoria: "S" },
+      { id: 70, texto: "Animado, sempre ri alto", categoria: "I" },
+      { id: 71, texto: "Corajoso, Destemido", categoria: "D" },
+      { id: 72, texto: "Quieto, Reservado", categoria: "C" },
+    ],
+    [
+      { id: 73, texto: "Resiste às mudanças bruscas", categoria: "S" },
+      { id: 74, texto: "Tende a prometer demais", categoria: "I" },
+      { id: 75, texto: "Se contrai quando sob pressão", categoria: "C" },
+      { id: 76, texto: "Não tem medo de uma boa briga", categoria: "D" },
+    ],
+    [
+      { id: 77, texto: "Gosta de bons momentos com amigos", categoria: "S" },
+      { id: 78, texto: "Planeja o futuro, Bem preparado", categoria: "C" },
+      { id: 79, texto: "Migra para novas aventuras", categoria: "I" },
+      { id: 80, texto: "Espera recompensa pelos alvos atingidos.", categoria: "D" },
+    ],
+    [
+      { id: 81, texto: "Quer mais autoridade", categoria: "D" },
+      { id: 82, texto: "Quer mais oportunidade", categoria: "I" },
+      { id: 83, texto: "Prefere evitar conflitos", categoria: "S" },
+      { id: 84, texto: "Quer direção clara", categoria: "C" },
+    ],
+    [
+      { id: 85, texto: "Encoraja os outros", categoria: "I" },
+      { id: 86, texto: "Bom ouvinte", categoria: "S" },
+      { id: 87, texto: "Analisa bem", categoria: "C" },
+      { id: 88, texto: "Delega bem", categoria: "D" },
+    ],
+    [
+      { id: 89, texto: "Regras existem para serem desafiadas", categoria: "D" },
+      { id: 90, texto: "Regras fazem justiça", categoria: "C" },
+      { id: 91, texto: "Regras produzem tédio", categoria: "I" },
+      { id: 92, texto: "Regras trazem segurança", categoria: "S" },
+    ],
+    [
+      { id: 93, texto: "Confiável, Seguro", categoria: "S" },
+      { id: 94, texto: "Criativo, único", categoria: "I" },
+      { id: 95, texto: "Sempre busca resultados", categoria: "D" },
+      { id: 96, texto: "Preciso, Perfeccionista", categoria: "C" },
+    ],
+  ];
+
+  const handleChange = (index, id, tipo, categoria) => {
+    setRespostas((prevRespostas) => ({
+      ...prevRespostas,
+      [index]: { ...prevRespostas[index], [tipo]: categoria },
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setErro("");
+    setMensagem("");
+
+    // Verifica se todas as respostas foram preenchidas
+    for (let i = 0; i < quadros.length; i++) {
+      if (!respostas[i] || !respostas[i].mais || !respostas[i].menos) {
+        setErro("Por favor, preencha todas as opções 'Mais' e 'Menos' em todos os quadros.");
+        return;
+      }
+    }
+
+    const contagemMaior = { D: 0, I: 0, S: 0, C: 0 };
+    const contagemMenor = { D: 0, I: 0, S: 0, C: 0 };
+
+    for (let i = 0; i < quadros.length; i++) {
+      contagemMaior[respostas[i].mais]++;
+      contagemMenor[respostas[i].menos]++;
+    }
+
+    const valoresTabelaCalculados = {
+      mais: categorias.map((cat) => contagemMaior[cat]),
+      menos: categorias.map((cat) => contagemMenor[cat]),
+      sintese: categorias.map((cat) => contagemMaior[cat] - contagemMenor[cat]),
+    };
+
+    setValoresTabela(valoresTabelaCalculados);
+
+    setDadosGraficoExterno({
+      labels: categorias,
+      datasets: [
+        {
+          label: "Externo (MAIOR)",
+          data: valoresTabelaCalculados.mais,
+          borderColor: "blue",
+          backgroundColor: "blue",
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          fill: false,
+          tension: 0.3,
+        },
+      ],
+    });
+
+    setDadosGraficoInterno({
+      labels: categorias,
+      datasets: [
+        {
+          label: "Interno (MENOR)",
+          data: valoresTabelaCalculados.menos,
+          borderColor: "green",
+          backgroundColor: "green",
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          fill: false,
+          tension: 0.3,
+        },
+      ],
+    });
+
+    setDadosGraficoSintese({
+      labels: categorias,
+      datasets: [
+        {
+          label: "Síntese",
+          data: valoresTabelaCalculados.sintese,
+          borderColor: "purple",
+          backgroundColor: "purple",
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          fill: false,
+          tension: 0.3,
+        },
+      ],
+    });
+
+    setMensagem("Respostas enviadas com sucesso!");
+  };
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <h1>Teste DISC</h1>
+      <form onSubmit={handleSubmit}>
+        {quadros.map((quadro, index) => (
+          <div key={index} style={{ marginBottom: "20px" }}>
+            <h3>Quadro {index + 1}</h3>
+            <table border="1" cellPadding="10" style={{ 
+                margin: "auto", 
+                width: "70%", 
+                borderCollapse: "collapse",
+                tableLayout: "fixed"
+            }}>
+              <thead>
+                <tr>
+                  <th style={{ width: "60%" }}>Opção</th>
+                  <th style={{ width: "20%" }}>Mais se parece comigo</th>
+                  <th style={{ width: "20%" }}>Menos se parece comigo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quadro.map((pergunta) => (
+                  <tr key={pergunta.id}>
+                    <td>{pergunta.texto}</td>
+                    <td style={{ textAlign: "center" }}>
+                      <input
+                        type="radio"
+                        name={`mais-${index}`}
+                        value={pergunta.id}
+                        onChange={() => handleChange(index, pergunta.id, "mais", pergunta.categoria)}
+                      />
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <input
+                        type="radio"
+                        name={`menos-${index}`}
+                        value={pergunta.id}
+                        onChange={() => handleChange(index, pergunta.id, "menos", pergunta.categoria)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+        <button type="submit">Enviar resposta</button>
+      </form>
+
+      {valoresTabela && (
+        <div style={{ width: "50%", margin: "auto", marginTop: "30px" }}>
+          <h2>Resultados em Tabela</h2>
+          <table border="1" cellPadding="10" style={{ 
+              margin: "auto", 
+              width: "100%", 
+              borderCollapse: "collapse", 
+              textAlign: "center" 
+          }}>
+            <thead>
+              <tr>
+                <th></th>
+                {categorias.map((cat) => <th key={cat}>{cat}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>O que mais parece</td>{valoresTabela.mais.map((val, idx) => <td key={idx}>{val}</td>)}</tr>
+              <tr><td>O que menos parece</td>{valoresTabela.menos.map((val, idx) => <td key={idx}>{val}</td>)}</tr>
+              <tr><td>Síntese</td>{valoresTabela.sintese.map((val, idx) => <td key={idx}>{val}</td>)}</tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {dadosGraficoSintese && (
+        <div style={{ width: "60%", margin: "auto", height: "300px" }}>
+          <h2>Resultados DISC</h2>
+          <Line data={dadosGraficoSintese} options={optionsWithDataLabels} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default function App() {
+  return <FormularioDISC />;
+}
